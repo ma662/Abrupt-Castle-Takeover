@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Simple RPG Game</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+        <script src="main.js"></script> -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    </head>
+    <body>
+        <div>
+            Simple RPG
+        </div>
+
+        <style>
+            .dynamic-character-card {
+                width: 350px;
+                height: 200px;
+                background-color: thistle;
+                display: inline-block;
+                margin-left: 1%;
+            }
+            .dynamic-character-card:hover {
+                opacity: 0.45;
+            }
+        </style>
+
+        <div class="content-container">
+            <div id="character-selection"></div>
+            
+                <div> Character Attacking Div </div>
+
+                <div> Opponent Defender Area </div>
+
+            <div> Opponent Selection Area </div>
+        </div>
+
+
+        <script type="text/javascript">
+
+        var game = {
+        //========================================
+        // Variables for processing
+        //========================================
+        
+        wins: 0,
+        losses: 0,
+        
+        // increments after every attack function call
+        attackCounter: 0,
+
+        // characters object of character objects
+        characters: {
+            character1: {
+                name: "name1",
+                hp: 16,
+                attackPower: 9,
+                uniqueAttack: "Sting of the brush",
+                uniqueImage: "./assets/images/cristobal_rojas1.png"
+            },
+
+            character2: {
+                name: "name2",
+                hp: 10,
+                attackPower: 12,
+                uniqueAttack: "Modern Philosophy",
+                uniqueImage: "./assets/images/domenikos_theotokopoulos1.png"
+            },
+
+            character3: {
+                name: "name3",
+                hp: 16,
+                attackPower: 9,
+                uniqueAttack: "Piercing Sword of the Heavens",
+                uniqueImage: "./assets/images/edmund_blair_leighton2.png"
+            }
+        },
+
+        // get the data from characters and populate the character selection div
+        spawnCharacters: function() {
+            // for the length of the characters object
+            for (var i = 0; i < Object.keys(game.characters).length; i++) {
+                var characterDiv = $("<div>");
+                var characterImage = $("<img>");
+                
+                // create css style for this class so it doesn't take up the whole line 
+                characterDiv.addClass("dynamic-character-card");
+                
+                // character is the value from characters object at character key
+                character = this.characters[Object.keys(this.characters)[i]];
+
+                // how do i distinguish betweewn my different characters?
+
+                // link the character object image to the characterImage
+                characterImage.attr("src", character.uniqueImage);
+
+                // acts as a jQuery hook and a css styling thing
+                characterImage.addClass("character-image");
+
+                // provide character object, now image has all character data
+                characterDiv.attr("data-character", character);
+                characterImage.appendTo(characterDiv);
+                
+                // add to character-selection div
+                $("#character-selection").append(characterDiv);
+                
+                //name
+                var hp = character.hp;
+                var attackPower = character.attackPower;
+                var uniqueAttack = character.uniqueAttack;
+                    
+                //name
+                var hpInfo = $("<p>");
+                hpInfo.addClass("hp-info");
+
+                var apInfo = $("<p>");
+                apInfo.addClass("ap-info");
+
+                var uaInfo = $("<p>");
+                uaInfo.addClass("ua-info");
+
+                hpInfo.text(hp);
+                apInfo.text(attackPower);
+                uaInfo.text(uniqueAttack);
+
+                hpInfo.appendTo(characterDiv);
+                apInfo.appendTo(characterDiv);
+                uaInfo.appendTo(characterDiv);
+
+
+                // how can i get this displayed? ? 
+                
+
+
+                // let's get all the attributes from each character
+                // should i should do this here or later?
+
+                // game.grabAttributes();
+            }
+
+        },
+
+        // grabAttributes: function(){
+        //     // go through each character
+        //     for (var i = 0; i < Object.keys(game.characters).length; i++) {
+        //         var charData = $(<img>).attr();
+        //     }
+
+        // },
+
+        // select character function
+        selectCharacter: function() {
+            // clear the selection row
+            
+            // append clicked image to the attack row
+
+        }
+        
+        }; // end game object
+
+        game.spawnCharacters();
+        
+        </script>
+        
+    </body>
+</html>
