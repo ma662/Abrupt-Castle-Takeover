@@ -16,21 +16,43 @@
 
         <style>
             .dynamic-character-card {
-                width: 350px;
+                width: 375px;
                 height: 200px;
-                background-color: thistle;
                 display: inline-block;
                 margin-left: 1%;
+                padding: 0.5em;
+
+                background-color: thistle;
+                border-color: darkolivegreen;
+                border-style: double;
+                border-width: 3px;
             }
             .dynamic-character-card:hover {
                 opacity: 0.45;
             }
+
+            .char-data {
+                position: absolute;
+                color: darkslategray;
+                margin: 0;
+                padding: 0;
+                text-align: end;
+            }
+
+            img {
+                width: 150px;
+                height: 150px;
+
+                border: 3px double crimson;
+            }
         </style>
 
         <div class="content-container">
-            <div id="character-selection"></div>
+            <div class="character-selection"></div>
             
-                <div> Character Attacking Div </div>
+                <div class="character-attacking"> 
+                    <!-- Character Attacking Div  -->
+                </div>
 
                 <div> Opponent Defender Area </div>
 
@@ -50,6 +72,7 @@
         
         // increments after every attack function call
         attackCounter: 0,
+        remainingEnemies: 0,
 
         // characters object of character objects
         characters: {
@@ -78,6 +101,12 @@
             }
         },
 
+        foes: {
+            // fill with foes
+        },
+
+
+
         // get the data from characters and populate the character selection div
         spawnCharacters: function() {
             // for the length of the characters object
@@ -91,8 +120,6 @@
                 // character is the value from characters object at character key
                 character = this.characters[Object.keys(this.characters)[i]];
 
-                // how do i distinguish betweewn my different characters?
-
                 // link the character object image to the characterImage
                 characterImage.attr("src", character.uniqueImage);
 
@@ -104,59 +131,83 @@
                 characterImage.appendTo(characterDiv);
                 
                 // add to character-selection div
-                $("#character-selection").append(characterDiv);
+                $(".character-selection").append(characterDiv);
                 
-                //name
+                // display data
+                var name = character.name;
                 var hp = character.hp;
                 var attackPower = character.attackPower;
                 var uniqueAttack = character.uniqueAttack;
                     
-                //name
+                var nameInfo = $("<p>");
+                nameInfo.addClass("char-data");
+                nameInfo.attr("id", "name-info");
+
                 var hpInfo = $("<p>");
-                hpInfo.addClass("hp-info");
+                hpInfo.addClass("char-data");
+                hpInfo.attr("id", "hp-info");
 
                 var apInfo = $("<p>");
-                apInfo.addClass("ap-info");
+                apInfo.addClass("char-data");
+                apInfo.attr("id", "ap-info");
 
                 var uaInfo = $("<p>");
-                uaInfo.addClass("ua-info");
+                uaInfo.addClass("char-data");
+                uaInfo.attr("id", "ua-info");
 
+                nameInfo.text(name);
                 hpInfo.text(hp);
                 apInfo.text(attackPower);
                 uaInfo.text(uniqueAttack);
 
+                nameInfo.appendTo(characterDiv);
                 hpInfo.appendTo(characterDiv);
                 apInfo.appendTo(characterDiv);
                 uaInfo.appendTo(characterDiv);
 
-
-                // how can i get this displayed? ? 
-                
-
-
-                // let's get all the attributes from each character
-                // should i should do this here or later?
-
-                // game.grabAttributes();
+                // after loading in, run selectCharacter and wait for player selection
+                this.selectCharacter();
             }
 
         },
 
-        // grabAttributes: function(){
-        //     // go through each character
-        //     for (var i = 0; i < Object.keys(game.characters).length; i++) {
-        //         var charData = $(<img>).attr();
-        //     }
-
-        // },
 
         // select character function
         selectCharacter: function() {
-            // clear the selection row
-            
-            // append clicked image to the attack row
+            $(".character-attacking").hide();   // move to initialization function
 
-        }
+            var activeCharacter;                // the fighting character
+
+            // when player selects character
+            $(".dynamic-character-card").on("click", function() {
+                // hide selection char data
+                $(".char-data").hide();
+                activeCharacter = $(this);
+
+                // console.log(activeCharacter);
+                activeCharacter.appendTo(".character-attacking");
+
+                // slideUp character selection
+                $(".character-selection").slideUp(270);
+
+                // fadeIn character attacking & their data
+                $(".character-attacking").fadeIn(1000);
+                $(".char-data").fadeIn(350);
+                
+                
+                // fadeIn the foes
+            });
+        },
+        
+        selectFoe: function() { 
+            // spawn 
+            
+            
+            
+            // fadeIn the options available to player
+                // fight
+                // run
+        },
         
         }; // end game object
 
