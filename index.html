@@ -215,16 +215,16 @@
         activeFoe: null,                        // enemy on defender div
         activeFoeCard: null,
         
-        attackCounter: 0,
+        attackCounter: 1,
         remainingEnemies: null,
         
         // characters object of character objects
         characters: {
             character1: {
                 name: "Ser Antoni Bruschatti",
-                currentHp: 16,
-                hp: 16,
-                attackPower: 9,
+                currentHp: 11,
+                hp: 11,
+                attackPower: 2,
                 uniqueAttack: "Sting of the Brush",
                 uniqueImage: "./assets/images/friends/cristobal_rojas1.png"
             },
@@ -233,7 +233,7 @@
                 name: "Ser Quandi Liv",
                 currentHp: 9,
                 hp: 9,
-                attackPower: 13,
+                attackPower: 3,
                 uniqueAttack: "Philosophical Quandary",
                 uniqueImage: "./assets/images/friends/domenikos_theotokopoulos1.png"
             },
@@ -242,7 +242,7 @@
                 name: "Ser Malcox-Grave",
                 currentHp: 16,
                 hp: 16,
-                attackPower: 6,
+                attackPower: 1,
                 uniqueAttack: "Piercing Sword of the Heavens",
                 uniqueImage: "./assets/images/friends/edmund_blair_leighton2.png"
             }
@@ -250,7 +250,7 @@
 
         foes: {
             foe1: {
-                name: "name1",
+                name: "Ganandorf",
 
                 currentHp: 20,
                 hp: 20,
@@ -262,7 +262,7 @@
             },
             
             foe2: {
-                name: "name2",
+                name: "Colundura",
 
                 currentHp: 18,
                 hp: 18,
@@ -274,7 +274,7 @@
             },
             
             foe3: {
-                name: "name3",
+                name: "Hasheem Bablev",
                 currentHp: 12,
                 hp: 12,
 
@@ -289,6 +289,21 @@
         initialize: function() {
             $(".character-attacking").hide();   // move to initialization function
 
+            game.charSelected = false;
+            game.foeSelected = false;
+
+            game.activeCharacter = null;                  
+            game.activeCharacterCard = null;
+
+            game.activeFoe = null;
+            game.activeFoeCard = null;
+            
+            game.attackCounter = 1;
+            game.remainingEnemies = null;
+
+            game.foes.foe1.isDead = false;
+            game.foes.foe2.isDead = false;
+            game.foes.foe3.isDead = false;
         },
 
         // get the data from characters and populate the character selection div
@@ -313,6 +328,8 @@
 
                 // provide character object, now image has all character data
                 // characterDiv.attr("data-character", character);
+                character.currentHp = character.hp;
+
                 characterDiv.data(character);
 
                 characterImage.appendTo(characterDiv);
@@ -328,9 +345,7 @@
                 var uniqueAttack = character.uniqueAttack;
 
                 //stuff this all into the characterDiv
-                // characterDiv.data
-
-                // currentHp = hp;
+                
                 // formatting
                 var nameInfo = $("<p>");
                 nameInfo.addClass("char-data");
@@ -364,7 +379,7 @@
                 // after loading in, run selectCharacter and wait for player selection
                 // this.selectCharacter();
             }
-            return (true);
+            return true;
         },
         
         
@@ -560,40 +575,19 @@
             // if defender current Hp not 0 and attacker current hp not 0
             // remove attacker ap from defender curr hp
 
-            
-            defender.currentHp = defender.currentHp - attacker.attackPower;
-            alert("attacker attacked for: " + attacker.attackPower + "\ndefender currentHp is: " + defender.currentHp); // for debugging
+            defender.currentHp = defender.currentHp - (attacker.attackPower * game.attackCounter);
 
 
             // only write if not negative 
             // print alert if dead
             if (defender.currentHp <= 0) {
+                defender.currentHp = 0;
+                alert("You've attacked for: " + (attacker.attackPower * game.attackCounter) + "\nDefender currentHp is: " + defender.currentHp); // for debugging
+                $(game.activeFoeCard.find("#hp-info")[0]).text("HP: " + defender.currentHp + "/" + defender.hp);
+                
                 alert("You have killed this defender ! Well done ! ");
                 defender.isDead = true;
-            }
 
-            // if defender is not dead
-            if (!defender.isDead) {
-                // print damage to card
-                $(game.activeFoeCard.find("#hp-info")[0]).text("HP: " + defender.currentHp + "/" + defender.hp);
-
-                alert("HUH?");
-                // execute counter attack
-                attacker.currentHp = attacker.currentHp - defender.counterAp;
-                
-                // if attacker hp is 0, remove the card, lose function?
-                if (attacker.currentHp <= 0) {
-                    activeCharacterCard.remove();
-                    alert("You've lost! The castle guardians did you in.");
-                    game.losses++;
-                    // lose function                    
-                }
-                else { // still alive
-                    alert("Defender countered for: " + defender.counterAp + " leaving you with: " + attacker.currentHp);
-                    $(game.activeCharacterCard.find("#hp-info")[0]).text("HP: " + attacker.currentHp + "/" + attacker.hp);
-                }
-            }
-            else { // if defender is dead ~~ !! 
                 // change bg to black
                 game.activeFoeCard.css({
                     "background-color": "black",
@@ -624,12 +618,33 @@
                 // if die, remainingEnemies--; 
                 game.remainingEnemies--;
             }
-            
-            if ( game.remainingEnemies <= 0 ){ // winnning condition
-                alert("YOU WIN! YOU'VE DONE IT MAN!");
+            // if defender is not dead
+            else{
+                // print damage to card
+                alert("You've attacked for: " + (attacker.attackPower * game.attackCounter) + "\nDefender currentHp is: " + defender.currentHp); // for debugging
+                $(game.activeFoeCard.find("#hp-info")[0]).text("HP: " + defender.currentHp + "/" + defender.hp);
+                
 
-                game.wins++;
-                // game.win();
+                alert("Oh no!");
+                // execute counter attack
+                attacker.currentHp = attacker.currentHp - defender.counterAp;
+                
+                // if attacker hp is 0, remove the card, lose function?
+                if (attacker.currentHp <= 0) {
+                    attacker.currentHp = 0;
+                    alert("Defender countered for: " + defender.counterAp + " leaving you with: " + attacker.currentHp + " HP.");
+                    $(game.activeCharacterCard.find("#hp-info")[0]).text("HP: " + attacker.currentHp + "/" + attacker.hp);
+                    
+                    game.youLose();
+                }
+                else { // still alive
+                    alert("Defender countered for: " + defender.counterAp + " leaving you with: " + attacker.currentHp + " HP.");
+                    $(game.activeCharacterCard.find("#hp-info")[0]).text("HP: " + attacker.currentHp + "/" + attacker.hp);
+                }
+            }
+
+            if ( game.remainingEnemies <= 0 && game.remainingEnemies != null ){ // winnning condition
+                game.youWin();
             }
             
             // write these changes to the respective cards
@@ -637,21 +652,62 @@
             // game.activeFoeCard.
             
             // then allow defender to counter attack player
+            
+            game.attackCounter++;
+        },
+        
+        youWin: function () {
+            alert("YOU'VE SUCCESSFULLY DEFEATED THE EVIL CASTLE DWELLERS! OTHERS WILL ENVY YOUR NEW FORTRESS OF SOLITUDE!");
+            game.wins++;
 
-
-
-
-
+            game.reset();
+            // stuff
         },
 
+        youLose: function() {
+            game.losses++;
+
+            alert("You've lost! The castle guardians did you in. Sad!");
+            
+            game.activeCharacterCard.remove();
+            game.reset();
+            // stuff
+        },
+
+        reset: function() { 
+            $(".character-selection").empty();
+            $(".character-attacking").empty();
+            $(".foe-center").empty();
+            $(".foe-defending").empty();
+
+
+            $(".character-selection").slideDown();
+            $(".character-attacking").slideDown();
+            $(".foe-selection").slideDown();
+            $(".foe-center").slideDown();
+
+            $(".character-selection").show();
+            $(".character-attacking").show();
+            $(".foe-selection").show();
+            $(".foe-center").show();
+
+
+
+
+            game.gameLogic();
+        },
+
+        //===========================================
+        // GAME LOGIC
+        //===========================================
         gameLogic: function() {
-            //===========================================
-            // GAME LOGIC
-            //===========================================
             game.initialize();
 
             // spawn the characters
             var isSpawned = game.spawnCharacters();
+            
+            // document.write("CHOOSE A CHARACTER").style({"text-align":"center"})
+
             console.log(isSpawned);
 
             var foesSpawned = false; // move up 
