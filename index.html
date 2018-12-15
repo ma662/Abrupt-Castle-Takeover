@@ -28,14 +28,14 @@
                 z-index: -25;
             }
 
+            .character-selection {
+                /* position: relative; */
+                display: flex;
+            }
+
             .character-attacking {
                 position: relative;
             }
-
-            .character-selection {
-                position: relative;
-            }
-
 
             /* FIX THIS CLUSTERFUCK */
             .foe-selection {
@@ -47,7 +47,7 @@
             }
 
             .foe-center {
-                display: inline-block;
+                display: flex;
                 bottom: 0;
                 left: 0;
                 right: 0;
@@ -60,28 +60,33 @@
 
             /* Friend Cards */
             .dynamic-character-card {
-                width: 375px;
+                position: relative;
+                width: 33%;
                 height: 200px;
                 display: inline-block;
                 margin-left: 1%;
                 padding: 0.5em; 
-
-                /* Try this crazy shit
-                position: absolute;
-                margin-left: auto;
-                margin-right: auto;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                left: 0; */
 
                 background-color: thistle;
                 border-color: darkolivegreen;
                 border-style: double;
                 border-width: 3px;
             }
-            .dynamic-character-card:hover {
+            /* .dynamic-character-card:hover {
                 opacity: 0.70;
+            } */
+            
+            .data-box {
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                top: 0;
+                left: 168px;
+                padding-top: 0.5em;
+
+                margin-left: auto;
+                margin-right: auto;
+                width: 39%;
             }
 
             .char-data {
@@ -99,32 +104,21 @@
                 border: 5px inset darkslategray;
             }
 
-
             /* Foe Cards */
             .dynamic-foe-card {
-                width: 375px;
+                position: relative;
+                width: 33%;
                 height: 200px;
                 display: inline-block;
-                margin-left: 1%;
+                margin: 0 0.1em;
                 padding: 0.5em; 
-
-                /* Try this crazy shit
-                position: absolute;
-                margin-left: auto;
-                margin-right: auto;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                left: 0; */
 
                 background-color: rgb(54, 2, 54);
                 border-color: darkolivegreen;
                 border-style: double;
                 border-width: 3px;
             }
-            .dynamic-foe-card:hover {
-                opacity: 0.70;
-            }
+
             .foe-data {
                 position: relative;
                 color: darkslategray;
@@ -132,9 +126,43 @@
                 padding: 0;
                 text-align: end;
             }
+            .foe-data-box {
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                top: 0;
+                left: 168px;
+                padding-top: 0.5em;
+                margin-left: auto;
+                margin-right: auto;
+                width: 39%;
+            }
             .foe-image {
-                /* stuff */
-                background-color: teal;
+                width: 150px;
+                height: 150px;
+
+                border: 5px inset darkred;
+            }
+
+            .foe-defending {
+                position: relative;
+                top: 18em;
+                width: 100%;
+            }
+
+            button {
+                padding: 3px;
+                text-align: center;
+                left: -83px;
+                background-color: violet;
+                color: maroon;
+                right: 0;
+                top: 229px;
+                bottom: 0;
+                /* margin: 56px; */
+                height: 3em;
+                margin-left: 50%;
+                position: absolute;
             }
 
         </style>
@@ -146,7 +174,7 @@
                     <!-- Character Attacking Div  -->
                 </div>
 
-                <div> Opponent Defender Area </div>
+                <div class="foe-defending">FOE DEFENDING</div>
 
             <div class="foe-selection">
                 <div class="foe-center"></div> 
@@ -155,7 +183,7 @@
         </div>
 
         <!-- Hide This For Now -->
-        <!-- <img class="background" src="./assets/images/dungeon.png"/> -->
+        <img class="background" src="./assets/images/dungeon.png"/>
 
 
         <script type="text/javascript">
@@ -169,15 +197,21 @@
         losses: 0,
         
         // increments after every attack function call
-        attackCounter: 0,
-        remainingEnemies: 0,
+        charSelected: false,
+        foeSelected: false,
 
+        activeCharacter: null,                  // the fighting character
+        activeFoe: null,                        // enemy on defender div
+        
+        attackCounter: 0,
+        remainingEnemies: null,
+        
         // characters object of character objects
         characters: {
             character1: {
                 name: "Ser Antoni Bruschatti",
+                currentHp: 16,
                 hp: 16,
-                currentHp: this.hp,
                 attackPower: 9,
                 uniqueAttack: "Sting of the Brush",
                 uniqueImage: "./assets/images/friends/cristobal_rojas1.png"
@@ -185,18 +219,18 @@
 
             character2: {
                 name: "Ser Quandi Liv",
-                hp: 10,
-                currentHp: this.hp,
-                attackPower: 12,
+                currentHp: 9,
+                hp: 9,
+                attackPower: 13,
                 uniqueAttack: "Philosophical Quandary",
                 uniqueImage: "./assets/images/friends/domenikos_theotokopoulos1.png"
             },
 
             character3: {
                 name: "Ser Malcox-Grave",
+                currentHp: 16,
                 hp: 16,
-                currentHp: this.hp,
-                attackPower: 9,
+                attackPower: 6,
                 uniqueAttack: "Piercing Sword of the Heavens",
                 uniqueImage: "./assets/images/friends/edmund_blair_leighton2.png"
             }
@@ -205,8 +239,8 @@
         foes: {
             foe1: {
                 name: "name1",
+                currentHp: 20,
                 hp: 20,
-                currentHp: this.hp,
                 counterAp: 4,
                 uniqueImage: "./assets/images/foes/giovanni_battista_tiepolo1.png"
             },
@@ -214,15 +248,15 @@
             foe2: {
                 name: "name2",
                 hp: 18,
-                currentHp: this.hp,
+                currentHp: 0,
                 counterAp: 9,
                 uniqueImage: "./assets/images/foes/konstantin_makovsky1.png"
             },
             
             foe3: {
                 name: "name3",
+                currentHp: 12,
                 hp: 12,
-                currentHp: this.hp,
                 counterAp: 10,
                 uniqueImage: "./assets/images/foes/hayez_francesco1.png"
             }
@@ -240,6 +274,7 @@
             for (var i = 0; i < Object.keys(game.characters).length; i++) {
                 var characterDiv = $("<div>");
                 var characterImage = $("<img>");
+                var dataDiv = $("<div>");
                 
                 // create css style for this class so it doesn't take up the whole line 
                 characterDiv.addClass("dynamic-character-card");
@@ -255,6 +290,11 @@
 
                 // provide character object, now image has all character data
                 characterDiv.attr("data-character", character);
+                    
+                // characterDiv.data(character);
+
+                console.log("testing :" + characterDiv.data(character));
+
                 characterImage.appendTo(characterDiv);
                 
                 // add to character-selection div
@@ -263,9 +303,15 @@
                 // display data
                 var name = character.name;
                 var hp = character.hp;
+                var currentHp = character.currentHp;
                 var attackPower = character.attackPower;
                 var uniqueAttack = character.uniqueAttack;
-                    
+
+                //stuff this all into the characterDiv
+                // characterDiv.data
+
+                // currentHp = hp;
+                // formatting
                 var nameInfo = $("<p>");
                 nameInfo.addClass("char-data");
                 nameInfo.attr("id", "name-info");
@@ -283,72 +329,128 @@
                 uaInfo.attr("id", "ua-info");
 
                 nameInfo.text(name);
-                hpInfo.text("HP: " + hp + "/" + hp); // 16/16
+                hpInfo.text("HP: " + currentHp + "/" + hp); // 16/16
                 apInfo.text("Attack-Power: " + attackPower);
                 uaInfo.text(uniqueAttack);
 
-                nameInfo.appendTo(characterDiv);
-                hpInfo.appendTo(characterDiv);
-                apInfo.appendTo(characterDiv);
-                uaInfo.appendTo(characterDiv);
+                nameInfo.appendTo(dataDiv);
+                hpInfo.appendTo(dataDiv);
+                apInfo.appendTo(dataDiv);
+                uaInfo.appendTo(dataDiv);
+
+                dataDiv.appendTo(characterDiv);
+                dataDiv.addClass("data-box");
 
                 // after loading in, run selectCharacter and wait for player selection
-                this.selectCharacter();
+                // this.selectCharacter();
             }
-
+            return (true);
         },
         
+        
+        // $('.dynamic-character-card').on('click', selectCharacter){
+        //     alert('hello');
+        // },
 
         // select character function
-        selectCharacter: function() {
+        selectCharacter: function(character) {
 
-            var activeCharacter;                // the fighting character
+            // get character from onClick, then treat it as jQuery object
+            var activeCharacterCard = $(character);
+            console.log(activeCharacterCard);
 
-            $('.dynamic-character-card').off().on('click',function(){
+            $(".char-data").hide();
 
-            // when player selects character
-            //$(".dynamic-character-card").on("click", function() {
-                // hide selection char data
-                $(".char-data").hide();
+            // character card selected
+            game.activeCharacterCard = activeCharacterCard;
 
-                activeCharacter = $(this);
+            // character object data
+            game.activeCharacter = activeCharacterCard.data();
+            console.log(game.activeCharacterCard.data());
 
-                console.log("aC is: " + activeCharacter);
-
-                // move selected character to character-attacking div
-                activeCharacter.appendTo(".character-attacking");
-
-                // slideUp character selection
-                $(".character-selection").slideUp(270);
-
-                // absolutely center the activeCharacter
-                 activeCharacter.css({
-                    "top": 0,
-                    "left": 0,
-                    "right": 0,
-                    "bottom": 0,
-                    "position": "absolute",
-                    "margin-left": "auto",
-                    "margin-right": "auto",
-                });
-
-                // fadeIn character attacking & their data
-                $(".character-attacking").fadeIn(1000);
-                $(".char-data").fadeIn(350);
-                
-                console.log("TEST1 WOOOOOOOO ~~`");
-
-                game.spawnFoes();
+            console.log ({
+                tryingThis : "IM TRYING THIS NEW THING",
+                activeCharacterCard : game.activeCharacterCard,
+                activeCharacter : game.activeCharacter,
+                name : game.activeCharacter.name,
+                uniqueAttack : game.activeCharacter.uniqueAttack
             });
-        },
+
+             // slideUp character selection
+             $(".character-selection").slideUp(270);
+
+            // absolutely center the activeCharacter
+            activeCharacterCard.css ({
+                "top": 0,
+                "left": 0,
+                "right": 0,
+                "bottom": 0,
+                "position": "absolute",
+                "margin-left": "auto",
+                "margin-right": "auto",
+            });
+
+             activeCharacterCard.appendTo(".character-attacking");
+
+            // fadeIn character attacking & their data
+            $(".character-attacking").fadeIn(1000);
+            $(".char-data").fadeIn(350);
+
+
+
+            
+                // $('.dynamic-character-card').off().on('click', function() {
+
+                //     // hide selection char data
+                //     $(".char-data").hide();
+                    
+                //     var activeCharacterCard = $(this);
+                //     game.activeCharacterCard = activeCharacterCard;
+
+                //     game.activeCharacter = activeCharacterCard.data();
+
+                //     // slideUp character selection
+                //     $(".character-selection").slideUp(270);
+                    
+                //     // absolutely center the activeCharacter
+                //     activeCharacterCard.css({
+                //         "top": 0,
+                //         "left": 0,
+                //         "right": 0,
+                //         "bottom": 0,
+                //         "position": "absolute",
+                //         "margin-left": "auto",
+                //         "margin-right": "auto",
+                //     });
+                    
+                //     activeCharacterCard.appendTo(".character-attacking");
+
+                //     // fadeIn character attacking & their data
+                //     $(".character-attacking").fadeIn(1000);
+                //     $(".char-data").fadeIn(350);
+
+                //     // game.spawnFoes();
+                // });
+                return true;
+        },  
         
         spawnFoes: function() {
-            console.log("AM I RUNNING TWICE? OR WHAT");
+            console.log("spawning da foes");
+            // console.log("AM I RUNNING TWICE? OR WHAT");
+            
+            var remainingEnemies = 0;
 
             // fadeIn the foes
             for (var i = 0; i < Object.keys(game.foes).length; i++) {
+                //gen remaining enemies
+                
+                remainingEnemies++;
+
+                console.log("Foe " + i);
+
                 var foeDiv = $("<div>");
                 var foeImage = $("<img>");
+                var dataDiv = $("<div>");
 
                 foeDiv.addClass("dynamic-foe-card");
 
@@ -364,24 +466,164 @@
                 foeImage.appendTo(foeDiv);
 
                 $(".foe-center").append(foeDiv);
+
+                // grab foe data
+                var name = foe.name;
+                var currentHp = foe.currentHp;
+                var hp = foe.hp; // total hp
+                var counterAp = foe.counterAp;
+
+                console.log("this foe's data: ");
+
+                console.log ({
+                    name : name,
+                    currentHp : currentHp,
+                    hp : hp,
+                    counterAp : counterAp
+                });
+
+                // explicitly make currentHp equal to totalHp
+                // currentHp = hp;
+
+                // console.log(currentHp);
+
+                var nameInfo = $("<p>");
+                nameInfo.addClass("foe-data");
+                nameInfo.attr("id", "name-info");
+                
+                var hpInfo = $("<p>");
+                hpInfo.addClass("foe-data");
+                hpInfo.attr("id", "hp-info");
+
+                var capInfo = $("<p>");
+                capInfo.addClass("foe-data");
+                capInfo.attr("id", "cap-info");
+
+                nameInfo.text(name);
+                hpInfo.text("HP: " + currentHp + "/" + hp); // 16/16
+                capInfo.text("Counter-Attack Power: " + counterAp);
+
+                nameInfo.appendTo(dataDiv);
+                hpInfo.appendTo(dataDiv);
+                capInfo.appendTo(dataDiv);
+
+                dataDiv.appendTo(foeDiv);
+                dataDiv.addClass("foe-data-box");
+                
+                game.remainingEnemies = remainingEnemies;
+                //select Foe
             }
+            this.selectFoe();
+            
+            return true;
         },
 
-        // selectFoe: function() { 
-        //     // spawn 
+        selectFoe: function() {
+            var activeFoe;
+
+            $('.dynamic-foe-card').off().on('click',function(){
+                activeFoe = $(this);
+
+                game.activeFoe = $(activeFoe).data();
+                
+                activeFoe.css({
+                    "top": 0,
+                    "left": 0,
+                    "right": 0,
+                    "bottom": 0,
+                    "position": "absolute",
+                    "margin-left": "auto",
+                    "margin-right": "auto",
+                });
+
+                activeFoe.appendTo(".foe-defending");
+
+                $(".foe-center").slideUp(270);
+                $(".foe-selection").slideUp(270);
+
+
+                var attButton = $("<button>").text("Attack: " + game.activeCharacter.uniqueAttack);
+                // attButton.attr("onclick=", game.attack(game.activeFoe));
+                attButton.on("click", function() {
+                    game.attack(game.activeFoe);
+                });
+
+                attButton.appendTo(game.activeCharacterCard);
+            });
+        },
+
+        attack: function(target) {
+            // stuff
+            alert("test");
+
+            // get attacker and defender objects
+            var attacker = game.activeCharacter;
+            var defender = target;
+
+            console.log("att & def info");
+            console.log({
+                attacker : attacker,
+                defender : defender
+            });
+
+
+
+            // if die, remainingEnemies--; 
+        },
+
+        // gameLogic: function() {
+        //     // initialize
+        //     game.initialize();
+
+        //     // spawn the characters
+        //     var isSpawned = game.spawnCharacters();
+
+        //     if (isSpawned) {
+        //         game.selectCharacter();
+        //     }
+
+        //     var isFoesSpawned = game
             
-            
-            
-        //     // fadeIn the options available to player
-        //         // fight
-        //         // run
-        // },
+        // }
         
         }; // end game object
+
+        // game.gameLogic();
         
+        //===========================================
+        // GAME LOGIC
+        //===========================================
+
         game.initialize();
-        game.spawnCharacters();
-        
+
+        // spawn the characters
+        var isSpawned = game.spawnCharacters();
+        console.log(isSpawned);
+
+        var foesSpawned = false;
+
+        // var charSelected = game.charSelected;
+
+        $('.dynamic-character-card').on('click', function() {
+            if (isSpawned && (!game.charSelected)) {
+                // game.selectCharacter(this).bind(game);
+                console.log(isSpawned);
+
+                // set to true after selectCharacter runs
+                game.charSelected = game.selectCharacter(this);
+            }
+
+            // seems to be working for now
+            if (game.charSelected && (!foesSpawned)){
+                console.log("WHATS GOING ON HERE");
+                game.spawnFoes();
+            }
+        });
+
+        console.log({
+            gameVersion: game.charSelected
+        });
+
         </script>
         
     </body>
