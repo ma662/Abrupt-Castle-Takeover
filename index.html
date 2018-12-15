@@ -151,9 +151,10 @@
             }
 
             button {
-                padding: 3px;
+                padding: 3px 20px;
                 text-align: center;
-                left: -83px;
+                left: 0;
+                width: 20%;
                 background-color: violet;
                 color: maroon;
                 right: 0;
@@ -161,8 +162,16 @@
                 bottom: 0;
                 /* margin: 56px; */
                 height: 3em;
-                margin-left: 50%;
+                margin-left: auto;
+                margin-right: auto;
                 position: absolute;
+
+                transition: letter-spacing 0.3s;
+
+            }
+            button:hover {
+                text-decoration: line-through;
+                letter-spacing: 0.3em;
             }
 
         </style>
@@ -201,7 +210,10 @@
         foeSelected: false,
 
         activeCharacter: null,                  // the fighting character
+        activeCharacterCard: null,
+
         activeFoe: null,                        // enemy on defender div
+        activeFoeCard: null,
         
         attackCounter: 0,
         remainingEnemies: null,
@@ -239,17 +251,25 @@
         foes: {
             foe1: {
                 name: "name1",
+
                 currentHp: 20,
                 hp: 20,
+
                 counterAp: 4,
+
+                isDead: false,
                 uniqueImage: "./assets/images/foes/giovanni_battista_tiepolo1.png"
             },
             
             foe2: {
                 name: "name2",
+
+                currentHp: 18,
                 hp: 18,
-                currentHp: 0,
+
                 counterAp: 9,
+
+                isDead: false,
                 uniqueImage: "./assets/images/foes/konstantin_makovsky1.png"
             },
             
@@ -257,7 +277,10 @@
                 name: "name3",
                 currentHp: 12,
                 hp: 12,
+
                 counterAp: 10,
+
+                isDead: false,
                 uniqueImage: "./assets/images/foes/hayez_francesco1.png"
             }
         },
@@ -289,11 +312,8 @@
                 characterImage.addClass("character-image");
 
                 // provide character object, now image has all character data
-                characterDiv.attr("data-character", character);
-                    
-                // characterDiv.data(character);
-
-                console.log("testing :" + characterDiv.data(character));
+                // characterDiv.attr("data-character", character);
+                characterDiv.data(character);
 
                 characterImage.appendTo(characterDiv);
                 
@@ -357,6 +377,7 @@
 
             // get character from onClick, then treat it as jQuery object
             var activeCharacterCard = $(character);
+            game.activeCharacterCard = activeCharacterCard;
             console.log(activeCharacterCard);
 
             $(".char-data").hide();
@@ -390,48 +411,13 @@
                 "margin-right": "auto",
             });
 
-             activeCharacterCard.appendTo(".character-attacking");
+            activeCharacterCard.appendTo(".character-attacking");
 
             // fadeIn character attacking & their data
             $(".character-attacking").fadeIn(1000);
             $(".char-data").fadeIn(350);
 
-
-
-            
-                // $('.dynamic-character-card').off().on('click', function() {
-
-                //     // hide selection char data
-                //     $(".char-data").hide();
-                    
-                //     var activeCharacterCard = $(this);
-                //     game.activeCharacterCard = activeCharacterCard;
-
-                //     game.activeCharacter = activeCharacterCard.data();
-
-                //     // slideUp character selection
-                //     $(".character-selection").slideUp(270);
-                    
-                //     // absolutely center the activeCharacter
-                //     activeCharacterCard.css({
-                //         "top": 0,
-                //         "left": 0,
-                //         "right": 0,
-                //         "bottom": 0,
-                //         "position": "absolute",
-                //         "margin-left": "auto",
-                //         "margin-right": "auto",
-                //     });
-                    
-                //     activeCharacterCard.appendTo(".character-attacking");
-
-                //     // fadeIn character attacking & their data
-                //     $(".character-attacking").fadeIn(1000);
-                //     $(".char-data").fadeIn(350);
-
-                //     // game.spawnFoes();
-                // });
-                return true;
+            return true;
         },  
         
         spawnFoes: function() {
@@ -452,17 +438,12 @@
                 var foeImage = $("<img>");
                 var dataDiv = $("<div>");
 
+                foe = this.foes[Object.keys(this.foes)[i]];
                 foeDiv.addClass("dynamic-foe-card");
-
-                foe = game.foes[Object.keys(game.foes)[i]];
+                foeDiv.data(foe); // attach entire foe object to div
                 
                 foeImage.attr("src", foe.uniqueImage);
-
-                // acts as a jQuery hook and a css styling thing
                 foeImage.addClass("foe-image");
-
-                // provide foe object, now image has all foe data
-                foeDiv.attr("data-foe", foe);
                 foeImage.appendTo(foeDiv);
 
                 $(".foe-center").append(foeDiv);
@@ -513,20 +494,25 @@
                 game.remainingEnemies = remainingEnemies;
                 //select Foe
             }
-            this.selectFoe();
+            // this.selectFoe();
             
             return true;
         },
 
-        selectFoe: function() {
-            var activeFoe;
+        selectFoe: function(enemy) {
+            var activeFoeCard = $(enemy);
+            
+            console.log(activeFoeCard.data().isDead);
 
-            $('.dynamic-foe-card').off().on('click',function(){
-                activeFoe = $(this);
+            // if the card isn't dead
+            if(!activeFoeCard.data().isDead){
+                game.activeFoeCard = activeFoeCard;
+                // console.log(activeFoeCard);
 
-                game.activeFoe = $(activeFoe).data();
+                game.activeFoe = activeFoeCard.data();
+                // console.log(game.activeFoe);
                 
-                activeFoe.css({
+                activeFoeCard.css({
                     "top": 0,
                     "left": 0,
                     "right": 0,
@@ -535,26 +521,31 @@
                     "margin-left": "auto",
                     "margin-right": "auto",
                 });
-
-                activeFoe.appendTo(".foe-defending");
-
+                
+                activeFoeCard.appendTo(".foe-defending");
+                
+                // hide the divs
                 $(".foe-center").slideUp(270);
                 $(".foe-selection").slideUp(270);
-
-
+                            
                 var attButton = $("<button>").text("Attack: " + game.activeCharacter.uniqueAttack);
-                // attButton.attr("onclick=", game.attack(game.activeFoe));
+                    // attButton.attr("onclick=", game.attack(game.activeFoe));
+                
                 attButton.on("click", function() {
+                    console.log("running attack on: " + game.activeFoe.name);
                     game.attack(game.activeFoe);
                 });
 
-                attButton.appendTo(game.activeCharacterCard);
-            });
+                attButton.appendTo(".character-attacking");
+            }
+            // });
         },
 
         attack: function(target) {
             // stuff
-            alert("test");
+            var newDataDiv = $("<div>");
+
+            console.log(game.activeFoeCard);
 
             // get attacker and defender objects
             var attacker = game.activeCharacter;
@@ -565,65 +556,146 @@
                 attacker : attacker,
                 defender : defender
             });
+            
+            // if defender current Hp not 0 and attacker current hp not 0
+            // remove attacker ap from defender curr hp
+
+            
+            defender.currentHp = defender.currentHp - attacker.attackPower;
+            alert("attacker attacked for: " + attacker.attackPower + "\ndefender currentHp is: " + defender.currentHp); // for debugging
+
+
+            // only write if not negative 
+            // print alert if dead
+            if (defender.currentHp <= 0) {
+                alert("You have killed this defender ! Well done ! ");
+                defender.isDead = true;
+            }
+
+            // if defender is not dead
+            if (!defender.isDead) {
+                // print damage to card
+                $(game.activeFoeCard.find("#hp-info")[0]).text("HP: " + defender.currentHp + "/" + defender.hp);
+
+                alert("HUH?");
+                // execute counter attack
+                attacker.currentHp = attacker.currentHp - defender.counterAp;
+                
+                // if attacker hp is 0, remove the card, lose function?
+                if (attacker.currentHp <= 0) {
+                    activeCharacterCard.remove();
+                    alert("You've lost! The castle guardians did you in.");
+                    game.losses++;
+                    // lose function                    
+                }
+                else { // still alive
+                    alert("Defender countered for: " + defender.counterAp + " leaving you with: " + attacker.currentHp);
+                    $(game.activeCharacterCard.find("#hp-info")[0]).text("HP: " + attacker.currentHp + "/" + attacker.hp);
+                }
+            }
+            else { // if defender is dead ~~ !! 
+                // change bg to black
+                game.activeFoeCard.css({
+                    "background-color": "black",
+                    "border-color": "darkslategray",
+                    // "position": "fixed",
+                    // "bottom": 0,
+                    // "left": 0
+                });
+                
+                // animate opacity 
+                game.activeFoeCard.animate({
+                    "opacity": 0.55,
+                });
+                
+                // remove from foe selection div
+                game.activeFoeCard.remove();
+                
+                //bring back up the foe-selection
+                $(".foe-selection").slideDown();
+                $(".foe-center").slideDown();
+                
+                // use these null values to check if there is an active defender
+                
+                game.activeFoe = null;
+                game.activeFoeCard = null;
+                game.foeSelected = false;
+                
+                // if die, remainingEnemies--; 
+                game.remainingEnemies--;
+            }
+            
+            if ( game.remainingEnemies <= 0 ){ // winnning condition
+                alert("YOU WIN! YOU'VE DONE IT MAN!");
+
+                game.wins++;
+                // game.win();
+            }
+            
+            // write these changes to the respective cards
+            
+            // game.activeFoeCard.
+            
+            // then allow defender to counter attack player
 
 
 
-            // if die, remainingEnemies--; 
+
+
         },
 
-        // gameLogic: function() {
-        //     // initialize
-        //     game.initialize();
+        gameLogic: function() {
+            //===========================================
+            // GAME LOGIC
+            //===========================================
+            game.initialize();
 
-        //     // spawn the characters
-        //     var isSpawned = game.spawnCharacters();
+            // spawn the characters
+            var isSpawned = game.spawnCharacters();
+            console.log(isSpawned);
 
-        //     if (isSpawned) {
-        //         game.selectCharacter();
-        //     }
+            var foesSpawned = false; // move up 
 
-        //     var isFoesSpawned = game
-            
-        // }
+            $('.dynamic-character-card').on('click', function() {
+                // alert("debug CLICKclick!!");
+                if (isSpawned && (!game.charSelected)) {
+                    // game.selectCharacter(this).bind(game);
+                    console.log(isSpawned);
+
+                    // set to true after selectCharacter runs
+                    game.charSelected = game.selectCharacter(this);
+                }
+
+                // seems to be working for now
+                if (game.charSelected && (!foesSpawned)){
+                    console.log("WHATS GOING ON HERE");
+                    
+                    foesSpawned = game.spawnFoes();
+                    console.log("were the foes spawned: " + foesSpawned);
+                }
+
+                $('.dynamic-foe-card').on('click', function() {
+                    if (game.activeFoe === null) {
+                        console.log(typeof(game.activeFoe));
+
+                        // console.log(foesSpawned && noAttacker);
+                        if (foesSpawned && (!game.foeSelected)) {
+
+                            game.selectFoe(this);
+                            game.foeSelected = true;
+                            // console.log(this);
+                            // alert("WAAA");
+                        }
+                    }
+
+                }); // end foe click event
+            });
+
+        }
         
         }; // end game object
 
-        // game.gameLogic();
-        
-        //===========================================
-        // GAME LOGIC
-        //===========================================
-
-        game.initialize();
-
-        // spawn the characters
-        var isSpawned = game.spawnCharacters();
-        console.log(isSpawned);
-
-        var foesSpawned = false;
-
-        // var charSelected = game.charSelected;
-
-        $('.dynamic-character-card').on('click', function() {
-            if (isSpawned && (!game.charSelected)) {
-                // game.selectCharacter(this).bind(game);
-                console.log(isSpawned);
-
-                // set to true after selectCharacter runs
-                game.charSelected = game.selectCharacter(this);
-            }
-
-            // seems to be working for now
-            if (game.charSelected && (!foesSpawned)){
-                console.log("WHATS GOING ON HERE");
-                game.spawnFoes();
-            }
-        });
-
-        console.log({
-            gameVersion: game.charSelected
-        });
-
+        game.gameLogic();
         </script>
         
     </body>
