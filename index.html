@@ -4,20 +4,49 @@
         <meta charset="utf-8" />
         <title>Simple RPG Game</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-        <script src="main.js"></script> -->
+        <!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" /> -->
+        <script defer src="./assets/javascript/game.js"></script> 
         <script
         src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
 
+        <link href="https://fonts.googleapis.com/css?family=Playfair+Display+SC:700" rel="stylesheet">
     </head>
     <body>
-        <div>
-            Simple RPG
+        <div class="title">
+            Abrupt Castle Takeover RPG
+            <p>developed by Myles Alcala</p>
         </div>
 
         <style>
+            body{
+                overflow: hidden;
+            }
+
+            .title {
+                font-family: 'Playfair Display SC', serif;
+                font-size: 2em;
+                color: whitesmoke;
+                text-align: center;
+
+
+                 text-shadow:
+                 -1px -1px 0 #000,
+                 1px -1px 0 #000,
+                 -1px 1px 0 #000,
+                 1px 1px 0 #000;  
+                }
+                
+                .title > p {
+                    font-family: Verdana, Geneva, Tahoma, sans-serif;
+                    font-size: 0.4em;
+                    color: whitesmoke;
+                    text-align: center;
+                    margin-top: 0;
+                    margin-bottom: 1em;
+            }
+
             .background {
                 position: fixed;
                 padding: 0;
@@ -31,10 +60,21 @@
             .character-selection {
                 /* position: relative; */
                 display: flex;
+                z-index: 25;
+            }
+
+            .char-span {
+                color: white;
+                font-size: 1em;
+                position: absolute;
+                margin-top: 0;
+                margin-left: 0;
+                top: 57px;
             }
 
             .character-attacking {
                 position: relative;
+                z-index: 30;
             }
 
             /* FIX THIS CLUSTERFUCK */
@@ -44,6 +84,15 @@
                 bottom: 0px;
                 left: 0;
                 right: 0;
+            }
+
+            .foe-span { 
+                color: white;
+                font-size: 1em;
+                position: relative;
+                /* margin-top: -20px; */
+                /* margin-left: 11px; */
+                bottom: -292px;
             }
 
             .foe-center {
@@ -75,9 +124,28 @@
             /* .dynamic-character-card:hover {
                 opacity: 0.70;
             } */
-            
+            #name-info {
+                font-weight: bold;
+                font-size: 17px;
+                /* text-align: center; */
+                margin-bottom: 6px;
+            }
+
+            #bio-info {
+                margin-top: 5px;
+                font-size: 12px;
+            }
+
+            #ua-info {
+                margin-top: 7px;
+                /* margin-bottom: 4px; */
+                font-size: 10px;
+                font-weight: bold;
+            }
+
             .data-box {
                 position: absolute;
+                overflow: auto;
                 right: 0;
                 bottom: 0;
                 top: 0;
@@ -119,9 +187,10 @@
                 border-width: 3px;
             }
 
+
             .foe-data {
                 position: relative;
-                color: darkslategray;
+                color: olive;
                 margin: 0;
                 padding: 0;
                 text-align: end;
@@ -158,7 +227,7 @@
                 background-color: violet;
                 color: maroon;
                 right: 0;
-                top: 229px;
+                top: 234px;
                 bottom: 0;
                 /* margin: 56px; */
                 height: 3em;
@@ -171,21 +240,24 @@
             }
             button:hover {
                 text-decoration: line-through;
-                letter-spacing: 0.3em;
+                letter-spacing: 0.22em;
             }
 
         </style>
 
         <div class="content-container">
-            <div class="character-selection"></div>
+            <div class="character-selection">
+                <span class="char-span">Select a character ...</span> 
+            </div>
             
                 <div class="character-attacking"> 
                     <!-- Character Attacking Div  -->
                 </div>
 
-                <div class="foe-defending">FOE DEFENDING</div>
+                <div class="foe-defending"></div>
 
             <div class="foe-selection">
+                <span class="foe-span">An opponent awaits ... </span>
                 <div class="foe-center"></div> 
             </div>
 
@@ -194,565 +266,6 @@
         <!-- Hide This For Now -->
         <img class="background" src="./assets/images/dungeon.png"/>
 
-
-        <script type="text/javascript">
-
-        var game = {
-        //========================================
-        // Variables for processing
-        //========================================
-        
-        wins: 0,
-        losses: 0,
-        
-        // increments after every attack function call
-        charSelected: false,
-        foeSelected: false,
-
-        activeCharacter: null,                  // the fighting character
-        activeCharacterCard: null,
-
-        activeFoe: null,                        // enemy on defender div
-        activeFoeCard: null,
-        
-        attackCounter: 1,
-        remainingEnemies: null,
-        
-        // characters object of character objects
-        characters: {
-            character1: {
-                name: "Ser Antoni Bruschatti",
-                currentHp: 11,
-                hp: 11,
-                attackPower: 2,
-                uniqueAttack: "Sting of the Brush",
-                uniqueImage: "./assets/images/friends/cristobal_rojas1.png"
-            },
-
-            character2: {
-                name: "Ser Quandi Liv",
-                currentHp: 9,
-                hp: 9,
-                attackPower: 3,
-                uniqueAttack: "Philosophical Quandary",
-                uniqueImage: "./assets/images/friends/domenikos_theotokopoulos1.png"
-            },
-
-            character3: {
-                name: "Ser Malcox-Grave",
-                currentHp: 16,
-                hp: 16,
-                attackPower: 1,
-                uniqueAttack: "Piercing Sword of the Heavens",
-                uniqueImage: "./assets/images/friends/edmund_blair_leighton2.png"
-            }
-        },
-
-        foes: {
-            foe1: {
-                name: "Ganandorf",
-
-                currentHp: 20,
-                hp: 20,
-
-                counterAp: 4,
-
-                isDead: false,
-                uniqueImage: "./assets/images/foes/giovanni_battista_tiepolo1.png"
-            },
-            
-            foe2: {
-                name: "Colundura",
-
-                currentHp: 18,
-                hp: 18,
-
-                counterAp: 9,
-
-                isDead: false,
-                uniqueImage: "./assets/images/foes/konstantin_makovsky1.png"
-            },
-            
-            foe3: {
-                name: "Hasheem Bablev",
-                currentHp: 12,
-                hp: 12,
-
-                counterAp: 10,
-
-                isDead: false,
-                uniqueImage: "./assets/images/foes/hayez_francesco1.png"
-            }
-        },
-
-
-        initialize: function() {
-            $(".character-attacking").hide();   // move to initialization function
-
-            game.charSelected = false;
-            game.foeSelected = false;
-
-            game.activeCharacter = null;                  
-            game.activeCharacterCard = null;
-
-            game.activeFoe = null;
-            game.activeFoeCard = null;
-            
-            game.attackCounter = 1;
-            game.remainingEnemies = null;
-
-            game.foes.foe1.isDead = false;
-            game.foes.foe2.isDead = false;
-            game.foes.foe3.isDead = false;
-        },
-
-        // get the data from characters and populate the character selection div
-        spawnCharacters: function() {
-            // for the length of the characters object
-            for (var i = 0; i < Object.keys(game.characters).length; i++) {
-                var characterDiv = $("<div>");
-                var characterImage = $("<img>");
-                var dataDiv = $("<div>");
-                
-                // create css style for this class so it doesn't take up the whole line 
-                characterDiv.addClass("dynamic-character-card");
-                
-                // character is the value from characters object at character key
-                character = this.characters[Object.keys(this.characters)[i]];
-
-                // link the character object image to the characterImage
-                characterImage.attr("src", character.uniqueImage);
-
-                // acts as a jQuery hook and a css styling thing
-                characterImage.addClass("character-image");
-
-                // provide character object, now image has all character data
-                // characterDiv.attr("data-character", character);
-                character.currentHp = character.hp;
-
-                characterDiv.data(character);
-
-                characterImage.appendTo(characterDiv);
-                
-                // add to character-selection div
-                $(".character-selection").append(characterDiv);
-                
-                // display data
-                var name = character.name;
-                var hp = character.hp;
-                var currentHp = character.currentHp;
-                var attackPower = character.attackPower;
-                var uniqueAttack = character.uniqueAttack;
-
-                //stuff this all into the characterDiv
-                
-                // formatting
-                var nameInfo = $("<p>");
-                nameInfo.addClass("char-data");
-                nameInfo.attr("id", "name-info");
-
-                var hpInfo = $("<p>");
-                hpInfo.addClass("char-data");
-                hpInfo.attr("id", "hp-info");
-
-                var apInfo = $("<p>");
-                apInfo.addClass("char-data");
-                apInfo.attr("id", "ap-info");
-
-                var uaInfo = $("<p>");
-                uaInfo.addClass("char-data");
-                uaInfo.attr("id", "ua-info");
-
-                nameInfo.text(name);
-                hpInfo.text("HP: " + currentHp + "/" + hp); // 16/16
-                apInfo.text("Attack-Power: " + attackPower);
-                uaInfo.text(uniqueAttack);
-
-                nameInfo.appendTo(dataDiv);
-                hpInfo.appendTo(dataDiv);
-                apInfo.appendTo(dataDiv);
-                uaInfo.appendTo(dataDiv);
-
-                dataDiv.appendTo(characterDiv);
-                dataDiv.addClass("data-box");
-
-                // after loading in, run selectCharacter and wait for player selection
-                // this.selectCharacter();
-            }
-            return true;
-        },
-        
-        
-        // $('.dynamic-character-card').on('click', selectCharacter){
-        //     alert('hello');
-        // },
-
-        // select character function
-        selectCharacter: function(character) {
-
-            // get character from onClick, then treat it as jQuery object
-            var activeCharacterCard = $(character);
-            game.activeCharacterCard = activeCharacterCard;
-            console.log(activeCharacterCard);
-
-            $(".char-data").hide();
-
-            // character card selected
-            game.activeCharacterCard = activeCharacterCard;
-
-            // character object data
-            game.activeCharacter = activeCharacterCard.data();
-            console.log(game.activeCharacterCard.data());
-
-            console.log ({
-                tryingThis : "IM TRYING THIS NEW THING",
-                activeCharacterCard : game.activeCharacterCard,
-                activeCharacter : game.activeCharacter,
-                name : game.activeCharacter.name,
-                uniqueAttack : game.activeCharacter.uniqueAttack
-            });
-
-             // slideUp character selection
-             $(".character-selection").slideUp(270);
-
-            // absolutely center the activeCharacter
-            activeCharacterCard.css ({
-                "top": 0,
-                "left": 0,
-                "right": 0,
-                "bottom": 0,
-                "position": "absolute",
-                "margin-left": "auto",
-                "margin-right": "auto",
-            });
-
-            activeCharacterCard.appendTo(".character-attacking");
-
-            // fadeIn character attacking & their data
-            $(".character-attacking").fadeIn(1000);
-            $(".char-data").fadeIn(350);
-
-            return true;
-        },  
-        
-        spawnFoes: function() {
-            console.log("spawning da foes");
-            // console.log("AM I RUNNING TWICE? OR WHAT");
-            
-            var remainingEnemies = 0;
-
-            // fadeIn the foes
-            for (var i = 0; i < Object.keys(game.foes).length; i++) {
-                //gen remaining enemies
-                
-                remainingEnemies++;
-
-                console.log("Foe " + i);
-
-                var foeDiv = $("<div>");
-                var foeImage = $("<img>");
-                var dataDiv = $("<div>");
-
-                foe = this.foes[Object.keys(this.foes)[i]];
-                foeDiv.addClass("dynamic-foe-card");
-                foeDiv.data(foe); // attach entire foe object to div
-                
-                foeImage.attr("src", foe.uniqueImage);
-                foeImage.addClass("foe-image");
-                foeImage.appendTo(foeDiv);
-
-                $(".foe-center").append(foeDiv);
-
-                // grab foe data
-                var name = foe.name;
-                var currentHp = foe.currentHp;
-                var hp = foe.hp; // total hp
-                var counterAp = foe.counterAp;
-
-                console.log("this foe's data: ");
-
-                console.log ({
-                    name : name,
-                    currentHp : currentHp,
-                    hp : hp,
-                    counterAp : counterAp
-                });
-
-                // explicitly make currentHp equal to totalHp
-                // currentHp = hp;
-
-                // console.log(currentHp);
-
-                var nameInfo = $("<p>");
-                nameInfo.addClass("foe-data");
-                nameInfo.attr("id", "name-info");
-                
-                var hpInfo = $("<p>");
-                hpInfo.addClass("foe-data");
-                hpInfo.attr("id", "hp-info");
-
-                var capInfo = $("<p>");
-                capInfo.addClass("foe-data");
-                capInfo.attr("id", "cap-info");
-
-                nameInfo.text(name);
-                hpInfo.text("HP: " + currentHp + "/" + hp); // 16/16
-                capInfo.text("Counter-Attack Power: " + counterAp);
-
-                nameInfo.appendTo(dataDiv);
-                hpInfo.appendTo(dataDiv);
-                capInfo.appendTo(dataDiv);
-
-                dataDiv.appendTo(foeDiv);
-                dataDiv.addClass("foe-data-box");
-                
-                game.remainingEnemies = remainingEnemies;
-                //select Foe
-            }
-            // this.selectFoe();
-            
-            return true;
-        },
-
-        selectFoe: function(enemy) {
-            var activeFoeCard = $(enemy);
-            
-            console.log(activeFoeCard.data().isDead);
-
-            // if the card isn't dead
-            if(!activeFoeCard.data().isDead){
-                game.activeFoeCard = activeFoeCard;
-                // console.log(activeFoeCard);
-
-                game.activeFoe = activeFoeCard.data();
-                // console.log(game.activeFoe);
-                
-                activeFoeCard.css({
-                    "top": 0,
-                    "left": 0,
-                    "right": 0,
-                    "bottom": 0,
-                    "position": "absolute",
-                    "margin-left": "auto",
-                    "margin-right": "auto",
-                });
-                
-                activeFoeCard.appendTo(".foe-defending");
-                
-                // hide the divs
-                $(".foe-center").slideUp(270);
-                $(".foe-selection").slideUp(270);
-                            
-                var attButton = $("<button>").text("Attack: " + game.activeCharacter.uniqueAttack);
-                    // attButton.attr("onclick=", game.attack(game.activeFoe));
-                
-                attButton.on("click", function() {
-                    console.log("running attack on: " + game.activeFoe.name);
-                    game.attack(game.activeFoe);
-                });
-
-                attButton.appendTo(".character-attacking");
-            }
-            // });
-        },
-
-        attack: function(target) {
-            // stuff
-            var newDataDiv = $("<div>");
-
-            console.log(game.activeFoeCard);
-
-            // get attacker and defender objects
-            var attacker = game.activeCharacter;
-            var defender = target;
-
-            console.log("att & def info");
-            console.log({
-                attacker : attacker,
-                defender : defender
-            });
-            
-            // if defender current Hp not 0 and attacker current hp not 0
-            // remove attacker ap from defender curr hp
-
-            defender.currentHp = defender.currentHp - (attacker.attackPower * game.attackCounter);
-
-
-            // only write if not negative 
-            // print alert if dead
-            if (defender.currentHp <= 0) {
-                defender.currentHp = 0;
-                alert("You've attacked for: " + (attacker.attackPower * game.attackCounter) + "\nDefender currentHp is: " + defender.currentHp); // for debugging
-                $(game.activeFoeCard.find("#hp-info")[0]).text("HP: " + defender.currentHp + "/" + defender.hp);
-                
-                alert("You have killed this defender ! Well done ! ");
-                defender.isDead = true;
-
-                // change bg to black
-                game.activeFoeCard.css({
-                    "background-color": "black",
-                    "border-color": "darkslategray",
-                    // "position": "fixed",
-                    // "bottom": 0,
-                    // "left": 0
-                });
-                
-                // animate opacity 
-                game.activeFoeCard.animate({
-                    "opacity": 0.55,
-                });
-                
-                // remove from foe selection div
-                game.activeFoeCard.remove();
-                
-                //bring back up the foe-selection
-                $(".foe-selection").slideDown();
-                $(".foe-center").slideDown();
-                
-                // use these null values to check if there is an active defender
-                
-                game.activeFoe = null;
-                game.activeFoeCard = null;
-                game.foeSelected = false;
-                
-                // if die, remainingEnemies--; 
-                game.remainingEnemies--;
-            }
-            // if defender is not dead
-            else{
-                // print damage to card
-                alert("You've attacked for: " + (attacker.attackPower * game.attackCounter) + "\nDefender currentHp is: " + defender.currentHp); // for debugging
-                $(game.activeFoeCard.find("#hp-info")[0]).text("HP: " + defender.currentHp + "/" + defender.hp);
-                
-
-                alert("Oh no!");
-                // execute counter attack
-                attacker.currentHp = attacker.currentHp - defender.counterAp;
-                
-                // if attacker hp is 0, remove the card, lose function?
-                if (attacker.currentHp <= 0) {
-                    attacker.currentHp = 0;
-                    alert("Defender countered for: " + defender.counterAp + " leaving you with: " + attacker.currentHp + " HP.");
-                    $(game.activeCharacterCard.find("#hp-info")[0]).text("HP: " + attacker.currentHp + "/" + attacker.hp);
-                    
-                    game.youLose();
-                }
-                else { // still alive
-                    alert("Defender countered for: " + defender.counterAp + " leaving you with: " + attacker.currentHp + " HP.");
-                    $(game.activeCharacterCard.find("#hp-info")[0]).text("HP: " + attacker.currentHp + "/" + attacker.hp);
-                }
-            }
-
-            if ( game.remainingEnemies <= 0 && game.remainingEnemies != null ){ // winnning condition
-                game.youWin();
-            }
-            
-            // write these changes to the respective cards
-            
-            // game.activeFoeCard.
-            
-            // then allow defender to counter attack player
-            
-            game.attackCounter++;
-        },
-        
-        youWin: function () {
-            alert("YOU'VE SUCCESSFULLY DEFEATED THE EVIL CASTLE DWELLERS! OTHERS WILL ENVY YOUR NEW FORTRESS OF SOLITUDE!");
-            game.wins++;
-
-            game.reset();
-            // stuff
-        },
-
-        youLose: function() {
-            game.losses++;
-
-            alert("You've lost! The castle guardians did you in. Sad!");
-            
-            game.activeCharacterCard.remove();
-            game.reset();
-            // stuff
-        },
-
-        reset: function() { 
-            $(".character-selection").empty();
-            $(".character-attacking").empty();
-            $(".foe-center").empty();
-            $(".foe-defending").empty();
-
-
-            $(".character-selection").slideDown();
-            $(".character-attacking").slideDown();
-            $(".foe-selection").slideDown();
-            $(".foe-center").slideDown();
-
-            $(".character-selection").show();
-            $(".character-attacking").show();
-            $(".foe-selection").show();
-            $(".foe-center").show();
-
-
-
-
-            game.gameLogic();
-        },
-
-        //===========================================
-        // GAME LOGIC
-        //===========================================
-        gameLogic: function() {
-            game.initialize();
-
-            // spawn the characters
-            var isSpawned = game.spawnCharacters();
-            
-            // document.write("CHOOSE A CHARACTER").style({"text-align":"center"})
-
-            console.log(isSpawned);
-
-            var foesSpawned = false; // move up 
-
-            $('.dynamic-character-card').on('click', function() {
-                // alert("debug CLICKclick!!");
-                if (isSpawned && (!game.charSelected)) {
-                    // game.selectCharacter(this).bind(game);
-                    console.log(isSpawned);
-
-                    // set to true after selectCharacter runs
-                    game.charSelected = game.selectCharacter(this);
-                }
-
-                // seems to be working for now
-                if (game.charSelected && (!foesSpawned)){
-                    console.log("WHATS GOING ON HERE");
-                    
-                    foesSpawned = game.spawnFoes();
-                    console.log("were the foes spawned: " + foesSpawned);
-                }
-
-                $('.dynamic-foe-card').on('click', function() {
-                    if (game.activeFoe === null) {
-                        console.log(typeof(game.activeFoe));
-
-                        // console.log(foesSpawned && noAttacker);
-                        if (foesSpawned && (!game.foeSelected)) {
-
-                            game.selectFoe(this);
-                            game.foeSelected = true;
-                            // console.log(this);
-                            // alert("WAAA");
-                        }
-                    }
-
-                }); // end foe click event
-            });
-
-        }
-        
-        }; // end game object
-
-        game.gameLogic();
-        </script>
-        
+        <img class="blood" src="./assets/images/blood.gif"/>
     </body>
 </html>
