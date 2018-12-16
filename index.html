@@ -4,12 +4,14 @@
         <meta charset="utf-8" />
         <title>Simple RPG Game</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" /> -->
+        <link rel="stylesheet" type="text/css" href="./assets/css/style.css" />
         <script defer src="./assets/javascript/game.js"></script> 
         <script
         src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
+
+        <link rel="shortcut icon" href="./assets/images/sword_icon.png"/>
 
         <link href="https://fonts.googleapis.com/css?family=Playfair+Display+SC:700" rel="stylesheet">
     </head>
@@ -18,232 +20,6 @@
             Abrupt Castle Takeover RPG
             <p>developed by Myles Alcala</p>
         </div>
-
-        <style>
-            body{
-                overflow: hidden;
-            }
-
-            .title {
-                font-family: 'Playfair Display SC', serif;
-                font-size: 2em;
-                color: whitesmoke;
-                text-align: center;
-
-
-                 text-shadow:
-                 -1px -1px 0 #000,
-                 1px -1px 0 #000,
-                 -1px 1px 0 #000,
-                 1px 1px 0 #000;  
-                }
-                
-                .title > p {
-                    font-family: Verdana, Geneva, Tahoma, sans-serif;
-                    font-size: 0.4em;
-                    color: whitesmoke;
-                    text-align: center;
-                    margin-top: 0;
-                    margin-bottom: 1em;
-            }
-
-            .background {
-                position: fixed;
-                padding: 0;
-                margin: 0;
-
-                bottom: 0;
-                left: 0;
-                z-index: -25;
-            }
-
-            .character-selection {
-                /* position: relative; */
-                display: flex;
-                z-index: 25;
-            }
-
-            .char-span {
-                color: white;
-                font-size: 1em;
-                position: absolute;
-                margin-top: 0;
-                margin-left: 0;
-                top: 57px;
-            }
-
-            .character-attacking {
-                position: relative;
-                z-index: 30;
-            }
-
-            /* FIX THIS CLUSTERFUCK */
-            .foe-selection {
-                position: relative;
-                display: inline-block;
-                bottom: 0px;
-                left: 0;
-                right: 0;
-            }
-
-            .foe-span { 
-                color: white;
-                font-size: 1em;
-                position: relative;
-                /* margin-top: -20px; */
-                /* margin-left: 11px; */
-                bottom: -292px;
-            }
-
-            .foe-center {
-                display: flex;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                /* top: 0; */
-
-                position: fixed;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            /* Friend Cards */
-            .dynamic-character-card {
-                position: relative;
-                width: 33%;
-                height: 200px;
-                display: inline-block;
-                margin-left: 1%;
-                padding: 0.5em; 
-
-                background-color: thistle;
-                border-color: darkolivegreen;
-                border-style: double;
-                border-width: 3px;
-            }
-            /* .dynamic-character-card:hover {
-                opacity: 0.70;
-            } */
-            #name-info {
-                font-weight: bold;
-                font-size: 17px;
-                /* text-align: center; */
-                margin-bottom: 6px;
-            }
-
-            #bio-info {
-                margin-top: 5px;
-                font-size: 12px;
-            }
-
-            #ua-info {
-                margin-top: 7px;
-                /* margin-bottom: 4px; */
-                font-size: 10px;
-                font-weight: bold;
-            }
-
-            .data-box {
-                position: absolute;
-                overflow: auto;
-                right: 0;
-                bottom: 0;
-                top: 0;
-                left: 168px;
-                padding-top: 0.5em;
-
-                margin-left: auto;
-                margin-right: auto;
-                width: 39%;
-            }
-
-            .char-data {
-                position: relative;
-                color: darkslategray;
-                margin: 0;
-                padding: 0;
-                text-align: end;
-            }
-
-            .character-image {
-                width: 150px;
-                height: 150px;
-
-                border: 5px inset darkslategray;
-            }
-
-            /* Foe Cards */
-            .dynamic-foe-card {
-                position: relative;
-                width: 33%;
-                height: 200px;
-                display: inline-block;
-                margin: 0 0.1em;
-                padding: 0.5em; 
-
-                background-color: rgb(54, 2, 54);
-                border-color: darkolivegreen;
-                border-style: double;
-                border-width: 3px;
-            }
-
-
-            .foe-data {
-                position: relative;
-                color: olive;
-                margin: 0;
-                padding: 0;
-                text-align: end;
-            }
-            .foe-data-box {
-                position: absolute;
-                right: 0;
-                bottom: 0;
-                top: 0;
-                left: 168px;
-                padding-top: 0.5em;
-                margin-left: auto;
-                margin-right: auto;
-                width: 39%;
-            }
-            .foe-image {
-                width: 150px;
-                height: 150px;
-
-                border: 5px inset darkred;
-            }
-
-            .foe-defending {
-                position: relative;
-                top: 18em;
-                width: 100%;
-            }
-
-            button {
-                padding: 3px 20px;
-                text-align: center;
-                left: 0;
-                width: 20%;
-                background-color: violet;
-                color: maroon;
-                right: 0;
-                top: 234px;
-                bottom: 0;
-                /* margin: 56px; */
-                height: 3em;
-                margin-left: auto;
-                margin-right: auto;
-                position: absolute;
-
-                transition: letter-spacing 0.3s;
-
-            }
-            button:hover {
-                text-decoration: line-through;
-                letter-spacing: 0.22em;
-            }
-
-        </style>
 
         <div class="content-container">
             <div class="character-selection">
@@ -266,6 +42,6 @@
         <!-- Hide This For Now -->
         <img class="background" src="./assets/images/dungeon.png"/>
 
-        <img class="blood" src="./assets/images/blood.gif"/>
+        <!-- <img class="blood" src="./assets/images/blood.gif"/> -->
     </body>
 </html>
